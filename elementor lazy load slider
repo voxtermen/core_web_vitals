@@ -1,0 +1,43 @@
+
+add_action('elementor/frontend/the_content', 'filter_the_content');
+function filter_the_content($content)
+{
+              $content = preg_replace(['/elementor-section /', '/elementor-column /', '/e-gallery-image /'], '$0 lazyelementorbackgroundimages ', $content);
+  $pos = strpos($content, 'lazyelementorbackgroundimages');
+  if ($pos !== false) { $content = substr_replace($content, '', $pos, strlen('lazyelementorbackgroundimages')); }
+  return $content;
+}
+
+add_action('wp_head', 'lazy_load_background_images', 999);
+function lazy_load_background_images()
+{
+    if (is_admin()) return;
+            ?>
+            <script>
+              jQuery(function ($) {
+                // Disable lazy-load if Waypoint is not available
+                if (!(window.Waypoint)) {
+                  $('.elementor-section.lazyelementorbackgroundimages,.elementor-column .lazyelementorbackgroundimages').removeClass('lazyelementorbackgroundimages');
+                  return;
+                }
+
+                // Lazy load images
+                $('.lazyelementorbackgroundimages').each(function () {
+                  const section = $(this);
+                  new Waypoint({
+                    element: section.get(0),
+                    handler: function () {
+                      section.removeClass('lazyelementorbackgroundimages');
+                    },
+                    offset: $(window).height() * 1.5
+                  });
+                });
+              });
+            </script>
+            <style>
+                .lazyelementorbackgroundimages, .lazyelementorbackgroundimages .elementor-widget-wrap {
+                    background-image: none !important;
+                }
+            </style>
+            <?php
+}
