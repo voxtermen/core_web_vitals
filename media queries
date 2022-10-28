@@ -1,0 +1,6 @@
+@media only screen and (min-width: 780px) {
+ .mvp-post-main {
+    min-height: 1360px
+  }
+}
+
